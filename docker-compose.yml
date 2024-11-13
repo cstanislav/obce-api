@@ -1,0 +1,12 @@
+services:
+  obec-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
