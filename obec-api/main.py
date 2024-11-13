@@ -62,6 +62,7 @@ def import_data():
     # Insert data
     csv_file = response.text.splitlines()
     csv_reader = csv.DictReader(csv_file)
+    print(csv_file)
     for row in csv_reader:
         cursor.execute("INSERT INTO data (name, district, zip_code, web) VALUES (%s, %s, %s, %s)", (row["Název obce"], row["Název okresu"], row["PSČ"], row["Webové stránky"]))
     conn.commit()
