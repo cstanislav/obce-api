@@ -1,9 +1,22 @@
 from fastapi import FastAPI
 import requests
-import sqlite3
+import psycopg2
 import csv
 
 DATA_URL = "https://www.datakhk.cz/api/download/v1/items/3ec5df3a89d7470ea40330baadca74f4/csv?layers=0"
+
+DB_HOST = "localhost"
+DB_PORT = "5432"
+DB_USER = "postgres"
+DB_PASS = "postgres"
+
+def get_database_connection():
+    return psycopg2.connect(
+        host=DB_HOST,
+        port=DB_PORT,
+        user=DB_USER,
+        password=DB_PASS
+    )
 
 app = FastAPI()
 
@@ -18,11 +31,12 @@ def map_data(row):
 
 @app.get("/obce")
 def get_obce(district: str, zip_code: str):
-    conn = sqlite3.connect("data.sqlite")
+    conn = get_database_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT id, name, district, zip_code, web FROM data WHERE district = ? AND zip_code = ?", (district, zip_code))
+    cursor.execute("SELECT id, name, district, zip_code, web FROM data WHERE district = %s AND zip_code = %s", (district, zip_code))
     data = cursor.fetchall()
+    conn.close()
 
     return list(map(map_data,data))
 
@@ -31,19 +45,23 @@ def import_data():
     # Download data from DATA_URL and save to sqlite database
     response = requests.get(DATA_URL)
 
-    # Create sqlite database
-    conn = sqlite3.connect("data.sqlite")
+    # Create PostgreSQL database
+    conn = get_database_connection()
     cursor = conn.cursor()
 
+    # Drop table if exists
+    cursor.execute("DROP TABLE IF EXISTS data")
+
     # Create table
-    cursor.execute("CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY, name TEXT, district TEXT, zip_code TEXT, web TEXT)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS data (id SERIAL PRIMARY KEY, name TEXT, district TEXT, zip_code TEXT, web TEXT)")
 
     # Insert data
     csv_file = response.text.splitlines()
     csv_reader = csv.DictReader(csv_file)
     for row in csv_reader:
-        cursor.execute("INSERT INTO data (name, district, zip_code, web) VALUES (?, ?, ?, ?)", (row["Název obce"], row["Název okresu"], row["PSČ"], row["Webové stránky"]))
+        cursor.execute("INSERT INTO data (name, district, zip_code, web) VALUES (%s, %s, %s, %s)", (row["Název obce"], row["Název okresu"], row["PSČ"], row["Webové stránky"]))
     conn.commit()
+    conn.close()
     
     print("Data imported.")
 
