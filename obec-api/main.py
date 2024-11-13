@@ -5,7 +5,7 @@ import csv
 
 DATA_URL = "https://www.datakhk.cz/api/download/v1/items/3ec5df3a89d7470ea40330baadca74f4/csv?layers=0"
 
-DB_HOST = "localhost"
+DB_HOST = "host.docker.internal"
 DB_PORT = "5432"
 DB_USER = "postgres"
 DB_PASS = "postgres"
