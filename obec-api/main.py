@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 import requests
 import psycopg2
 import csv
@@ -39,6 +40,9 @@ def get_obce(district: str, zip_code: str):
     conn.close()
 
     return list(map(map_data,data))
+
+# Serve static files from /client
+app.mount("/", StaticFiles(directory="client", html=True), name="client")
 
 def import_data():
     print("Importing data...")
