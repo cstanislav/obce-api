@@ -9,10 +9,11 @@ app = FastAPI()
 
 def map_data(row):
     return {
-        "name": row[0],
-        "district": row[1],
-        "zip_code": row[2],
-        "web": row[3]
+        "id": row[0],
+        "name": row[1],
+        "district": row[2],
+        "zip_code": row[3],
+        "web": row[4]
     }
 
 @app.get("/obce")
@@ -20,7 +21,7 @@ def get_obce(district: str, zip_code: str):
     conn = sqlite3.connect("data.sqlite")
     cursor = conn.cursor()
 
-    cursor.execute("SELECT name, district, zip_code, web FROM data WHERE district = ? AND zip_code = ?", (district, zip_code))
+    cursor.execute("SELECT id, name, district, zip_code, web FROM data WHERE district = ? AND zip_code = ?", (district, zip_code))
     data = cursor.fetchall()
 
     return list(map(map_data,data))
