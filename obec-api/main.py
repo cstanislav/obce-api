@@ -7,15 +7,23 @@ DATA_URL = "https://www.datakhk.cz/api/download/v1/items/3ec5df3a89d7470ea40330b
 
 app = FastAPI()
 
+def map_data(row):
+    return {
+        "name": row[0],
+        "district": row[1],
+        "zip_code": row[2],
+        "web": row[3]
+    }
+
 @app.get("/obce")
 def get_obce(district: str, zip_code: str):
     conn = sqlite3.connect("data.sqlite")
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM data WHERE district = ? AND zip_code = ?", (district, zip_code))
+    cursor.execute("SELECT name, district, zip_code, web FROM data WHERE district = ? AND zip_code = ?", (district, zip_code))
     data = cursor.fetchall()
 
-    return data
+    return list(map(map_data,data))
 
 def import_data():
     print("Importing data...")
@@ -33,7 +41,6 @@ def import_data():
     csv_file = response.text.splitlines()
     csv_reader = csv.DictReader(csv_file)
     for row in csv_reader:
-        print(row)
         cursor.execute("INSERT INTO data (name, district, zip_code, web) VALUES (?, ?, ?, ?)", (row["Název obce"], row["Název okresu"], row["PSČ"], row["Webové stránky"]))
     conn.commit()
     
