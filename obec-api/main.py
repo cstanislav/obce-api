@@ -48,6 +48,8 @@ def import_data():
     print("Importing data...")
     # Download data from DATA_URL and save to sqlite database
     response = requests.get(DATA_URL)
+    print("Got response")
+    print(response.text)
 
     # Create PostgreSQL database
     conn = get_database_connection()
