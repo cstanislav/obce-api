@@ -20,7 +20,7 @@
         event.preventDefault();
         const district = document.getElementById("district").value;
         const zip_code = document.getElementById("zip_code").value;
-        const response = await fetch(`http://localhost:8000/obce?district=${district}&zip_code=${zip_code}`);
+        const response = await fetch(`/obce?district=${district}&zip_code=${zip_code}`);
         const data = await response.json();
         document.getElementById("result").innerText = JSON.stringify(data, null, 2);
       });
