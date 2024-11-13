@@ -12,12 +12,16 @@ DB_USER = "postgres"
 DB_PASS = "postgres"
 
 def get_database_connection():
-    return psycopg2.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        user=DB_USER,
-        password=DB_PASS
-    )
+    try:
+        return psycopg2.connect(
+            host=DB_HOST,
+            port=DB_PORT,
+            user=DB_USER,
+            password=DB_PASS
+        )
+    except Exception as e:
+        print("Error connecting to database:")
+        print(e)
 
 app = FastAPI()
 
