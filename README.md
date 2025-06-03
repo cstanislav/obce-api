@@ -1,6 +1,6 @@
 # Creating and Deploying a Simple API
 
-A simple API created during a webinar for AT&T Junior Hackathon 2024.
+A simple containerized API created during a AT&T Junior Hackathon 2024 webinar.
 
 1. Finding an Open Data Source
     - What is open data and where to find it
